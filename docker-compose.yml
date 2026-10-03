@@ -1,17 +1,16 @@
 services:
   postgres:
     image: postgres:15-alpine
-    container_name: usps-postgres
     environment:
-      POSTGRES_DB: usps_portal
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ${DB_NAME:-usps_portal}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-local-dev-only}
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-usps_portal}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -20,7 +19,6 @@ services:
 
   redis:
     image: redis:7-alpine
-    container_name: usps-redis
     ports:
       - "6379:6379"
     volumes:
@@ -37,16 +35,15 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: usps-backend
     environment:
       DB_HOST: postgres
       DB_PORT: 5432
-      DB_NAME: usps_portal
-      DB_USER: postgres
-      DB_PASSWORD: postgres
+      DB_NAME: ${DB_NAME:-usps_portal}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-local-dev-only}
       REDIS_HOST: redis
       REDIS_PORT: 6379
-      JWT_SECRET: YWJjZGVmZ2hpamsxMjM0NTY3ODkwYWJjZGVmZ2hpamsxMjM0NTY3ODkwYWJjZGVmZ2hpamsxMjM0NTY3ODkwYWJjZGVmZ2hpamsxMjM0NTY3ODkw
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env; see .env.example}
     ports:
       - "8080:8080"
     depends_on:
@@ -66,11 +63,11 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: usps-frontend
     ports:
       - "3000:80"
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     networks:
       - usps-network
 

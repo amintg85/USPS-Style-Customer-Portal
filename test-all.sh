@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 
 BASE_URL="http://localhost:8080"
 EMAIL="test$(date +%s)@example.com"
@@ -74,10 +75,11 @@ TRACK_RESPONSE=$(curl -s -X GET "$BASE_URL/api/tracking/$TRACKING" \
 
 if echo "$TRACK_RESPONSE" | grep -q "shipment"; then
   echo "✅ Tracking successful"
-  echo "$TRACK_RESPONSE" | python3 -m json.tool 2>/dev/null | head -20
+  echo "$TRACK_RESPONSE" | python3 -m json.tool 2>/dev/null
 else
   echo "❌ Tracking failed"
   echo "$TRACK_RESPONSE"
+  exit 1
 fi
 echo ""
 
@@ -92,6 +94,7 @@ if echo "$MY_SHIPMENTS" | grep -q "shipments"; then
 else
   echo "❌ Failed to retrieve shipments"
   echo "$MY_SHIPMENTS"
+  exit 1
 fi
 echo ""
 
@@ -106,6 +109,7 @@ if echo "$STATS" | grep -q "totalShipments"; then
 else
   echo "❌ Failed to get statistics"
   echo "$STATS"
+  exit 1
 fi
 echo ""
 
@@ -125,7 +129,8 @@ done
 if [ "$RATE_LIMIT_PASSED" = true ]; then
   echo "✅ Rate limiting test passed (first 5 requests should succeed)"
 else
-  echo "⚠️  Some requests failed (may be rate limited)"
+  echo "❌ One or more requests failed before the rate limit was reached"
+  exit 1
 fi
 echo ""
 
@@ -135,11 +140,12 @@ if [ "$UNAUTH_RESPONSE" = "401" ] || [ "$UNAUTH_RESPONSE" = "403" ]; then
   echo "✅ Unauthorized access blocked (HTTP $UNAUTH_RESPONSE)"
 else
   echo "❌ Security issue: Unauthorized access returned HTTP $UNAUTH_RESPONSE"
+  exit 1
 fi
 echo ""
 
 echo "=========================================="
-echo "✅ All Tests Completed!"
+echo "✅ All Tests Passed!"
 echo "=========================================="
 echo ""
 echo "Frontend: http://localhost:3000"

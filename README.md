@@ -1,6 +1,6 @@
 # USPS-Style Customer Portal
 
-A secure customer portal inspired by USPS workflows, built with Vue 3, Spring Boot 3, and Redis. This application demonstrates enterprise-level features including authentication, package tracking, reporting, Redis caching, and rate limiting.
+A portfolio demo of carrier shipment-tracking workflows, built with Vue 3, Spring Boot 3, PostgreSQL, and Redis. This project is not affiliated with or endorsed by the United States Postal Service.
 
 ## 🚀 Tech Stack
 
@@ -15,7 +15,7 @@ A secure customer portal inspired by USPS workflows, built with Vue 3, Spring Bo
 - **Spring Boot 3** with Java 17
 - **Spring Security** with JWT authentication
 - **PostgreSQL** for data persistence
-- **Redis** for caching (improves DB queries 10–12s → 2–3s)
+- **Redis** for caching selected shipment and report responses
 - **Spring Data JPA** for database operations
 - **Bucket4j** for rate limiting
 - **Spring Boot Actuator** for monitoring
@@ -26,10 +26,10 @@ A secure customer portal inspired by USPS workflows, built with Vue 3, Spring Bo
 
 ## ✨ Key Features
 
-- 🔐 **OAuth2/JWT Authentication** - Secure user authentication and authorization
+- 🔐 **JWT Authentication** - User registration and login issue signed tokens
 - 📦 **Package Tracking** - Real-time shipment tracking with event history
 - 📊 **Reports & Statistics** - Generate reports with date ranges and view statistics
-- ⚡ **Redis Caching** - Cached API calls for improved performance (10-12s → 2-3s improvement)
+- ⚡ **Redis Caching** - Selected shipment and report responses are cached
 - 🚦 **Rate Limiting** - Rate-limited endpoints using Bucket4j (100 requests/minute)
 - 📈 **Monitoring** - Spring Boot Actuator endpoints for health checks and metrics
 - 🐳 **Docker-based Microservices** - Fully containerized application
@@ -80,12 +80,12 @@ A secure customer portal inspired by USPS workflows, built with Vue 3, Spring Bo
 
 1. **Clone the repository**
    ```bash
-   cd "USPS-Style Customer Portal (Vue 3 + Spring Boot 3 + Redis)"
+   cp .env.example .env
    ```
 
-2. **Start all services**
+2. **Set a private JWT key** in `.env` (generate one with `openssl rand -base64 48`), then start all services:
    ```bash
-   docker-compose up -d
+   docker compose up --build -d
    ```
 
 3. **Access the application**
@@ -152,7 +152,7 @@ The frontend will run on http://localhost:5173
 
 - **Redis Caching**: Shipment lookups, user shipments, and reports are cached
 - **Cache TTL**: 10 minutes default
-- **Performance Improvement**: Database queries reduced from 10-12s to 2-3s
+- Performance has not been benchmarked; no latency improvement is claimed.
 
 ## 📊 Monitoring
 
@@ -211,16 +211,11 @@ This project is a demonstration application for portfolio purposes.
 
 ## 👤 Md Amin
 
-Built to demonstrate experience with:
-- High-traffic government system patterns
-- Microservices architecture
-- Caching strategies
-- Security best practices
-- Modern full-stack development
+This is a local portfolio demonstration, not a USPS system or production service.
 
+The automated smoke test creates a temporary account each time it runs:
+```bash
+./test-all.sh
+```
 
-Test Credentials:
-  Email: test1765571195@example.com
-  Password: test123
-
-# USPS-Style-Customer-Portal-Vue-3-Spring-Boot-3-Redis-
+Run it after starting the Compose stack with `docker compose up -d`.

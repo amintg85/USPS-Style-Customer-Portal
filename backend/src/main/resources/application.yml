@@ -44,7 +44,7 @@ server:
     include-binding-errors: always
 
 jwt:
-  secret: ${JWT_SECRET:YWJjZGVmZ2hpamsxMjM0NTY3ODkwYWJjZGVmZ2hpamsxMjM0NTY3ODkwYWJjZGVmZ2hpamsxMjM0NTY3ODkwYWJjZGVmZ2hpamsxMjM0NTY3ODkw}
+  secret: ${JWT_SECRET}
   expiration: 86400000 # 24 hours
 
 management:
